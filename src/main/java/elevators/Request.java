@@ -1,11 +1,11 @@
 package elevators;
 
 public class Request {
-    private int currentFloor, destinationFloor;
+    private int startFloor, destinationFloor;
 
-    public Request(int startFloor, int endFloor){
-        this.currentFloor = startFloor;
-        this.destinationFloor = endFloor;
+    public Request(int startFloor, int destinationFloor){
+        this.startFloor = startFloor;
+        this.destinationFloor = destinationFloor;
     }
 
 }
