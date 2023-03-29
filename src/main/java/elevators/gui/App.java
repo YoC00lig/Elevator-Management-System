@@ -1,5 +1,6 @@
 package elevators.gui;
 
+import elevators.ElevatorSystem;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -16,7 +17,8 @@ public class App extends Application {
     private final Stage stage = new Stage();
 
     private Scene scene;
-    private BorderPane mainbox = new BorderPane();;
+    private BorderPane mainbox = new BorderPane();
+    private ElevatorSystem system;
 
     public static void main(String[] args) {
         launch(args);
@@ -58,14 +60,39 @@ public class App extends Application {
         Label chooseLabel = new Label("Input your values");
         chooseLabel.setFont(new Font("Arial", 50));
 
-        Button start = new Button("Proceed");
+        Button proceed = new Button("Proceed");
         Button end = new Button("End");
 
-        start.setPrefWidth(100);
+        proceed.setPrefWidth(100);
         end.setPrefWidth(100);
 
-        start.setOnMouseClicked(event -> {
+
+
+        TextField numberOfFloors = new TextField("2");
+        numberOfFloors.setAlignment(Pos.CENTER);
+        Label numberOfFloorsLabel = new Label("Enter number of floors:");
+        HBox input1 = new HBox(40, numberOfFloorsLabel, numberOfFloors);
+
+        TextField numberOfElevators = new TextField("2");
+        numberOfElevators.setAlignment(Pos.CENTER);
+        Label numberOfElevatorsLabel = new Label("Enter number of elevators:");
+        HBox input2 = new HBox(25, numberOfElevatorsLabel, numberOfElevators);
+
+        TextField capacity = new TextField("2");
+        capacity.setAlignment(Pos.CENTER);
+        Label capacityLabel = new Label("Enter elevator capacity:");
+        HBox input3 = new HBox(40, capacityLabel, capacity);
+
+        VBox inputs = new VBox(20,input1,input2,input3);
+        inputs.setAlignment(Pos.CENTER);
+
+
+        proceed.setOnMouseClicked(event -> {
             try {
+                int floorsNumber = Integer.parseInt(numberOfFloors.getText());
+                int elevatorsNumber = Integer.parseInt(numberOfElevators.getText());
+                int capacityNumber = Integer.parseInt(capacity.getText());
+                this.system = new ElevatorSystem(floorsNumber, elevatorsNumber, capacityNumber);
                 drawSimulation();
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
@@ -73,26 +100,8 @@ public class App extends Application {
         });
 
 
-        HBox hBox = new HBox(40, start, end);
+        HBox hBox = new HBox(40, proceed, end);
         hBox.setAlignment(Pos.CENTER);
-
-        TextField numberOfFloors = new TextField();
-        numberOfFloors.setPromptText("Number of floors");
-        Label numberOfFloorsLabel = new Label("Enter number of floors:");
-        HBox input1 = new HBox(40, numberOfFloorsLabel, numberOfFloors);
-
-        TextField numberOfElevators = new TextField();
-        numberOfElevators.setPromptText("Number of elevators");
-        Label numberOfElevatorsLabel = new Label("Enter number of elevators:");
-        HBox input2 = new HBox(25, numberOfElevatorsLabel, numberOfElevators);
-
-        TextField capacity = new TextField();
-        capacity.setPromptText("Elevator capacity");
-        Label capacityLabel = new Label("Enter elevator capacity:");
-        HBox input3 = new HBox(40, capacityLabel, capacity);
-
-        VBox inputs = new VBox(20,input1,input2,input3);
-        inputs.setAlignment(Pos.CENTER);
 
         VBox vBox = new VBox(100, chooseLabel, inputs,hBox);
         vBox.setAlignment(Pos.CENTER);
