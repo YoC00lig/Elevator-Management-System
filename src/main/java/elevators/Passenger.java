@@ -1,7 +1,7 @@
 package elevators;
 
 public class Passenger {
-    private Floor currentFloor, destinationFloor;
+    private final Floor currentFloor, destinationFloor;
 
     public Passenger(Floor currentFloor, Floor destinationFloor){
         this.currentFloor = currentFloor;
@@ -10,10 +10,6 @@ public class Passenger {
 
     public Floor getCurrentFloor() {
         return this.currentFloor;
-    }
-
-    public int getCurrentFloorID() {
-        return this.currentFloor.getFloorID();
     }
 
     public Floor getDestinationFloor() {

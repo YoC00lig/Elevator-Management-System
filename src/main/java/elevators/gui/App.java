@@ -213,7 +213,7 @@ public class App extends Application {
     }
 
     public int[] getElevatorGridPosition(int elevatorID, int floorID){
-        int row = floorID;
+        int row = 2*floorsNumber -2 - 2*floorID;
         int col = 2 + elevatorID*2;
         return new int[]{col, row};
     }
