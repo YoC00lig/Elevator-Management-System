@@ -1,6 +1,7 @@
 package elevators;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import  java.util.LinkedList;
 import java.util.LinkedHashMap;
 
@@ -8,20 +9,21 @@ public class ElevatorSystem {
     public ArrayList<Floor> floors;
     public ArrayList<Elevator> elevators;
     protected LinkedHashMap<Floor, LinkedList<Passenger>> passengers;
-    public int numberOfFloors, numberOfElevators;
+    public int numberOfFloors, numberOfElevators, maxCapacity;
 
-    public ElevatorSystem(int numberOfFloors, int numberOfElevators){
+    public ElevatorSystem(int numberOfFloors, int numberOfElevators, int maxCapacity){
         this.numberOfFloors = numberOfFloors;
         this.numberOfElevators = numberOfElevators;
         this.floors = new ArrayList<>();
         this.elevators = new ArrayList<>();
         this.passengers = new LinkedHashMap<>();
+        this.maxCapacity = maxCapacity;
 
         for (int id = 0; id < this.numberOfFloors; id++) floors.add(new Floor(id));
         for (int i = 0; i < this.numberOfElevators; i++) elevators.add(new Elevator(this));
     }
 
-    public void addPassenger(Passenger passenger){
+    public void addWaitingPassenger(Passenger passenger){
         Floor floor = passenger.getCurrentFloor();
         floor.incrementWaitingPassengersNum();
         if (this.passengers.get(floor) == null){
@@ -55,7 +57,28 @@ public class ElevatorSystem {
         return this.passengers.get(floor);
     }
 
-    public ArrayList<Floor> getPassengersFullFloors(){
+    public ArrayList<Floor> getWaitingFloors(){
         return new ArrayList<>(this.passengers.keySet());
+    }
+
+    public ArrayList<Integer> getWaitingFloorsSortedID(){
+        ArrayList<Integer> floorsIDs = new ArrayList<>();
+        for (Floor floor: this.passengers.keySet()) floorsIDs.add(floor.getFloorID());
+        Collections.sort(floorsIDs);
+        return floorsIDs;
+    }
+
+    public Floor getNextFloor(Floor currentFloor) {
+        for (Floor floor: this.floors){
+            if (floor.getFloorID() == currentFloor.getFloorID() + 1) return floor;
+        }
+        return null;
+    }
+
+    public Floor getPrevFloor(Floor currentFloor) {
+        for (Floor floor: this.floors){
+            if (floor.getFloorID() == currentFloor.getFloorID() - 1) return floor;
+        }
+        return null;
     }
 }
