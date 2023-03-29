@@ -81,4 +81,11 @@ public class ElevatorSystem {
         }
         return null;
     }
+
+    public Floor getFloorWithId(int floorID){
+        for (Floor floor: this.floors){
+            if (floor.getFloorID() == floorID) return floor;
+        }
+        return null;
+    }
 }
