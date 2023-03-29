@@ -15,6 +15,7 @@ public class SimulationEngine implements IEngine, Runnable {
     }
 
     private void update() {
+        this.system.moveAllElevators();
     }
 
     @Override

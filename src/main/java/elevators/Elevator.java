@@ -37,17 +37,41 @@ public class Elevator {
         this.passengersIn.add(passenger);
     }
 
-    public void letPassengerOut(Passenger passenger) {
-        int idx = passengersIn.indexOf(passenger);
-        this.passengersIn.remove(idx);
+    public void move(){
+        if (this.currentDirection == Direction.UP){
+            Floor nextFloor = this.system.getNextFloor(this.currentFloor);
+            if (nextFloor == null || checkIfHigherStopExists(this.getCurrentFloor().getFloorID()) == -1) {
+                if (checkIfLowerStopExists(this.getCurrentFloor().getFloorID()) != -1) this.changeDirection(Direction.DOWN);
+                else this.changeDirection(Direction.IDLE);
+                return;
+            }
+            if (this.stops.contains(nextFloor)) stops.remove(nextFloor);
+            this.changeFloor(nextFloor);
+        }
+        else if (this.currentDirection == Direction.DOWN)  {
+            Floor prevFloor = this.system.getPrevFloor(this.currentFloor);
+            if (prevFloor == null || checkIfLowerStopExists(this.getCurrentFloor().getFloorID()) == -1){
+                if (checkIfHigherStopExists(this.getCurrentFloor().getFloorID()) != -1) this.changeDirection(Direction.UP);
+                else this.changeDirection(Direction.IDLE);
+                return;
+            }
+            if (this.stops.contains(prevFloor)) stops.remove(prevFloor);
+            this.changeFloor(prevFloor);
+        }
     }
 
-    public void move(){
-//        if (this.currentDirection == Direction.UP){
-//            if (this.currentFloor.getFloorID() + 1 < system.numberOfFloors){
-//                this.currentFloor = nextFloor(this.currentFloor);
-//            }
-//        }
+    public int checkIfHigherStopExists(int floorID){
+        for (Floor floor : this.stops) {
+            if (floor.getFloorID() > floorID) return floor.getFloorID();
+        }
+        return -1;
+    }
+
+    public int checkIfLowerStopExists(int floorID){
+        for (Floor floor : this.stops) {
+            if (floor.getFloorID() < floorID) return floor.getFloorID();
+        }
+        return -1;
     }
 
     public void setNewDestination(Floor floor){

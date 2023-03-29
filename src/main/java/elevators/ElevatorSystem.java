@@ -8,7 +8,7 @@ public class ElevatorSystem {
     public ArrayList<Floor> floors;
     public ArrayList<Elevator> elevators;
     protected LinkedHashMap<Floor, LinkedList<Passenger>> passengers;
-    public int numberOfFloors, numberOfElevators, maxCapacity;
+    public int numberOfFloors, numberOfElevators;
 
     public ElevatorSystem(int numberOfFloors, int numberOfElevators){
         this.numberOfFloors = numberOfFloors;
@@ -24,10 +24,9 @@ public class ElevatorSystem {
     // gdy pasażer naciska przycisk, szukana jest dla niego winda - jesli nie uda nam się jej znalezc,
     // pasazer dodawany jest na liste oczekujacych
     public void addWaitingPassenger(Passenger passenger){
-        Elevator elevator = findElevatorForPassenger(passenger);
+        Elevator elevator = getElevatorForPassenger(passenger);
         if (elevator == null){
             Floor floor = passenger.getCurrentFloor();
-            floor.incrementWaitingPassengersNum();
             if (this.passengers.get(floor) == null){
                 LinkedList<Passenger> newPassengers = new LinkedList<>();
                 newPassengers.add(passenger);
@@ -41,19 +40,22 @@ public class ElevatorSystem {
 
     public void removePassenger(Passenger passenger){
         Floor floor = passenger.getCurrentFloor();
-        floor.decreaseWaitingPassengersNum();
         this.passengers.get(floor).remove(passenger);
         if (this.passengers.get(floor).size() == 0) this.passengers.remove(floor);
     }
 
-    public Elevator findElevatorForPassenger(Passenger passenger) {
+    public void moveAllElevators() {
+        for (Elevator elevator : this.elevators) elevator.move();
+    }
+
+    public Elevator getElevatorForPassenger(Passenger passenger) {
         int floorID = passenger.getCurrentFloor().getFloorID();
 
         for (Elevator elevator : this.elevators) {
             if (elevator.getCurrentDirection() == Direction.IDLE) return elevator;
         }
 
-        Elevator bestPossibleElevator = findPossibleElevator(floorID);
+        Elevator bestPossibleElevator = getPossibleElevator(floorID);
         if (bestPossibleElevator == null) return null;
 
         // jesli znaleziono najlepsza mozliwa winde, to wpuszczamy pasazera do srodka i dodajemy stop dla tej windy
@@ -81,7 +83,7 @@ public class ElevatorSystem {
     }
 
     // szuka windy, która ma podane piętro na swojej aktualnej drodze i ma do niej najblizej
-    public Elevator findPossibleElevator(int floorID){
+    public Elevator getPossibleElevator(int floorID){
         int smallestDistance = this.numberOfElevators;
         Elevator nearestElevator = null;
 
@@ -111,6 +113,20 @@ public class ElevatorSystem {
     public Floor getFloorWithId(int floorID){
         for (Floor floor: this.floors){
             if (floor.getFloorID() == floorID) return floor;
+        }
+        return null;
+    }
+
+    public Floor getNextFloor(Floor currentFloor) {
+        for (Floor floor: this.floors){
+            if (floor.getFloorID() == currentFloor.getFloorID() + 1) return floor;
+        }
+        return null;
+    }
+
+    public Floor getPrevFloor(Floor currentFloor) {
+        for (Floor floor: this.floors){
+            if (floor.getFloorID() == currentFloor.getFloorID() - 1) return floor;
         }
         return null;
     }
