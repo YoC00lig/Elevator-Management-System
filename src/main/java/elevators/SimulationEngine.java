@@ -15,12 +15,6 @@ public class SimulationEngine implements IEngine, Runnable {
     }
 
     private void update() {
-        for (Elevator elevator : this.system.elevators){
-            elevator.letPassengersOut();
-            elevator.letPassengersIn();
-            elevator.move();
-            elevator.findNextStopOrReverse();
-        }
     }
 
     @Override

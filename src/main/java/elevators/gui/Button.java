@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.FileInputStream;
+import javafx.scene.control.TextField;
 
 public class Button {
     private final VBox vBox;
@@ -26,13 +27,14 @@ public class Button {
         imageView.setFitHeight(60);
 
         TextField signature = new TextField("0");
+        signature.setAlignment(Pos.CENTER);
 
         Floor currentFloor = system.getFloorWithId(floorID);
 
-        vBox = new VBox(imageView);
+        vBox = new VBox(10,imageView, signature);
         vBox.setAlignment(Pos.CENTER);
 
-        vBox.setOnMouseClicked(event -> {;
+        imageView.setOnMouseClicked(event -> {
             int destinationFloorID = Integer.parseInt(signature.getText());
             if (destinationFloorID != floorID) {
                 Floor destinationFloor = system.getFloorWithId(destinationFloorID);

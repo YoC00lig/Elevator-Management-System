@@ -1,5 +1,6 @@
 package elevators.gui;
 
+import elevators.Elevator;
 import elevators.ElevatorSystem;
 import javafx.application.Application;
 import javafx.geometry.HPos;
@@ -7,11 +8,15 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import elevators.gui.Lift;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import javafx.scene.input.MouseEvent;
@@ -52,7 +57,19 @@ public class App extends Application {
             }
         });
 
-        VBox vBox = new VBox(100, welcomeLabel, start);
+        Image image = null;
+        try {
+            image = new Image(new FileInputStream("src/main/resources/start.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(500);
+        imageView.setFitHeight(400);
+
+        VBox vBox = new VBox(100, welcomeLabel, imageView, start);
         vBox.setAlignment(Pos.CENTER);
         gridPane.add(vBox, 0, 0);
         gridPane.setAlignment(Pos.CENTER);
@@ -79,8 +96,6 @@ public class App extends Application {
         styleButtonHover(proceed);
         styleButtonHover(end);
 
-
-
         TextField numberOfFloors = new TextField("2");
         numberOfFloors.setAlignment(Pos.CENTER);
         Label numberOfFloorsLabel = new Label("Enter number of floors:");
@@ -91,12 +106,7 @@ public class App extends Application {
         Label numberOfElevatorsLabel = new Label("Enter number of elevators:");
         HBox input2 = new HBox(25, numberOfElevatorsLabel, numberOfElevators);
 
-        TextField capacity = new TextField("2");
-        capacity.setAlignment(Pos.CENTER);
-        Label capacityLabel = new Label("Enter elevator capacity:");
-        HBox input3 = new HBox(40, capacityLabel, capacity);
-
-        VBox inputs = new VBox(20,input1,input2,input3);
+        VBox inputs = new VBox(20,input1,input2);
         inputs.setAlignment(Pos.CENTER);
 
 
@@ -104,8 +114,7 @@ public class App extends Application {
             try {
                 floorsNumber = Integer.parseInt(numberOfFloors.getText());
                 elevatorsNumber = Integer.parseInt(numberOfElevators.getText());
-                int capacityNumber = Integer.parseInt(capacity.getText());
-                this.system = new ElevatorSystem(floorsNumber, elevatorsNumber, capacityNumber);
+                this.system = new ElevatorSystem(floorsNumber, elevatorsNumber);
                 drawSimulation();
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
@@ -135,6 +144,7 @@ public class App extends Application {
         Button endSimulation = new Button("END");
         endSimulation.setOnMouseClicked(event -> System.exit(0));
         styleButtonHover(endSimulation);
+
         HBox hBox = new HBox(40, endSimulation);
         hBox.setAlignment(Pos.CENTER);
         VBox vBox = new VBox(100, hBox);
@@ -172,22 +182,22 @@ public class App extends Application {
         for (int i = 0; i < gridWidth; i++) gridPane.getColumnConstraints().add(new ColumnConstraints(size));
         for (int i = 0; i < gridHeight; i++) gridPane.getRowConstraints().add(new RowConstraints(size));
 
-        int id_ = 0;
+        int currRow =  gridHeight - 2;
         for (VBox button:buttons){
-            int row = id_ * 2;
+            int row =  currRow;
             int col = 0;
-            gridPane.add(button, col, row);
+            gridPane.add(button, col, row, 2, 2);
             GridPane.setHalignment(button, HPos.CENTER);
-            id_++;
+            currRow-=2;
         }
 
-//        for (int i = 0; i < gridWidth; i++){
-//            for (int j = 0; j < gridHeight; j++){
-//                Label label = new Label("" + i + ","+j);
-//                gridPane.add(label,i,j);
-//            }
-//        }
-
+        int elevatorID = 0;
+        for (Elevator elevator : this.system.elevators){
+            int[] position = getElevatorGridPosition(elevatorID, elevator.getCurrentFloor().getFloorID());
+            elevatorID++;
+            VBox lift = new Lift(elevator).getvBox();
+            gridPane.add(lift, position[0], position[1], 2, 2);
+        }
 
         scene.setRoot(gridPane);
         stage.setScene(scene);
@@ -198,7 +208,14 @@ public class App extends Application {
     public void styleButtonHover(Button B) {
         B.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> B.setEffect(new DropShadow()));
         B.addEventHandler(MouseEvent.MOUSE_EXITED, e -> B.setEffect(null));
-        B.setStyle("-fx-background-color: #ffdd99;" + "-fx-background-radius: 1em; ");
+        B.setStyle("-fx-background-color: #f7cac9;" + "-fx-background-radius: 1em;");
         B.setFont(new Font("Arial", 14));
     }
+
+    public int[] getElevatorGridPosition(int elevatorID, int floorID){
+        int row = floorID;
+        int col = 2 + elevatorID*2;
+        return new int[]{col, row};
+    }
+
 }
