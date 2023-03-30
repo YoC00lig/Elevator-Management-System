@@ -25,6 +25,7 @@ public class ElevatorSystem {
     // pasazer dodawany jest na liste oczekujacych
     public void addWaitingPassenger(Passenger passenger){
         Elevator elevator = getElevatorForPassenger(passenger);
+        System.out.println("Znaleziono windę: " + elevator);
         if (elevator == null){
             Floor floor = passenger.getCurrentFloor();
             if (this.passengers.get(floor) == null){
@@ -52,16 +53,19 @@ public class ElevatorSystem {
         int floorID = passenger.getCurrentFloor().getFloorID();
 
         for (Elevator elevator : this.elevators) {
-            if (elevator.getCurrentDirection() == Direction.IDLE) return elevator;
+            if (elevator.getCurrentDirection() == Direction.IDLE) {
+                elevator.addStop(passenger.getCurrentFloor());
+                return elevator;
+            }
         }
 
         Elevator bestPossibleElevator = getPossibleElevator(floorID);
         if (bestPossibleElevator == null) return null;
 
-        // jesli znaleziono najlepsza mozliwa winde, to wpuszczamy pasazera do srodka i dodajemy stop dla tej windy
+        // jesli znaleziono najlepsza mozliwa winde, to wpuszczamy pasazera do srodka i dodajemy stop dla tej windy, winda jedzie po niego
         Direction bestElevatorDirection = bestPossibleElevator.getCurrentDirection();
         bestPossibleElevator.letPassengerIn(passenger);
-        bestPossibleElevator.addStop(passenger.getDestinationFloor());
+        bestPossibleElevator.addStop(passenger.getCurrentFloor());
 
         int currentDestinationId = bestPossibleElevator.getDestinationFloor().getFloorID();
         int newDestinationId = passenger.getDestinationFloor().getFloorID();

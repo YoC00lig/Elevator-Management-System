@@ -15,23 +15,31 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import elevators.gui.Lift;
+import elevators.SimulationEngine;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.effect.DropShadow;
+import javafx.application.Platform;
 
 public class App extends Application {
     private GridPane gridPane = new GridPane();
     private final Stage stage = new Stage();
     private final int size = 50;
+    private SimulationEngine engine;
 
     private Scene scene;
     private BorderPane mainbox = new BorderPane();
     private ElevatorSystem system;
     private ScrollPane scroll = new ScrollPane();
     private int floorsNumber, elevatorsNumber;
+    Thread thread;
+    BorderPane pane = new BorderPane();
+    Button endSimulation;
+    ArrayList<VBox> toRemoveFromGrid = new ArrayList<>();
+    ArrayList<VBox> buttons = new ArrayList<>();
+    int gridHeight, gridWidth;
 
     public static void main(String[] args) {
         launch(args);
@@ -39,6 +47,13 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws FileNotFoundException {
+        stage.setResizable(false);
+        stage.setOnCloseRequest( e -> {
+            stage.close();
+            thread.interrupt();
+            System.exit(0);
+        });
+
         gridPane.getChildren().clear();
         gridPane = new GridPane();
 
@@ -111,14 +126,15 @@ public class App extends Application {
 
 
         proceed.setOnMouseClicked(event -> {
-            try {
-                floorsNumber = Integer.parseInt(numberOfFloors.getText());
-                elevatorsNumber = Integer.parseInt(numberOfElevators.getText());
-                this.system = new ElevatorSystem(floorsNumber, elevatorsNumber);
-                drawSimulation();
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+            floorsNumber = Integer.parseInt(numberOfFloors.getText());
+            elevatorsNumber = Integer.parseInt(numberOfElevators.getText());
+            this.gridWidth = (elevatorsNumber * 2) + 2; // each elevator - 2 cells width and 2 additional for button
+            this.gridHeight = floorsNumber * 2; // each floor 2 cells height
+            this.system = new ElevatorSystem(floorsNumber, elevatorsNumber);
+            this.PrepareGrid();
+            engine = new SimulationEngine(this.system, 200, this, true);
+            thread = new Thread(engine);
+            thread.start();
         });
 
 
@@ -134,34 +150,55 @@ public class App extends Application {
         stage.show();
     }
 
-    public void drawSimulation() throws FileNotFoundException {
-        BorderPane pane = new BorderPane();
+    public void drawMap(){
+        for (VBox toDelete : this.toRemoveFromGrid){
+            gridPane.getChildren().remove(toDelete);
+        }
+
+        int elevatorID = 0;
+        for (Elevator elevator : this.system.elevators){
+            int[] position = getElevatorGridPosition(elevatorID, elevator.getCurrentFloor().getFloorID());
+            elevatorID++;
+            VBox lift = new Lift(elevator).getvBox();
+            gridPane.add(lift, position[0], position[1], 2, 2);
+            this.toRemoveFromGrid.add(lift);
+        }
+
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void PrepareGrid(){
         gridPane.getChildren().clear();
+        gridPane.setGridLinesVisible(true);
 
-        // make grid scrollable
-        scroll.setContent(gridPane);
-
-        Button endSimulation = new Button("END");
+        endSimulation = new Button("END");
         endSimulation.setOnMouseClicked(event -> System.exit(0));
         styleButtonHover(endSimulation);
 
         HBox hBox = new HBox(40, endSimulation);
         hBox.setAlignment(Pos.CENTER);
-        VBox vBox = new VBox(100, hBox);
-        pane.setTop(vBox);
+        HBox HBox = new HBox(100, hBox);
+        pane.setTop(HBox);
 
-        /// tutaj bedzie grid
-        ArrayList<VBox> buttons = new ArrayList<>();
+        for (int i = 0; i < gridWidth; i++) gridPane.getColumnConstraints().add(new ColumnConstraints(size));
+        for (int i = 0; i < gridHeight; i++) gridPane.getRowConstraints().add(new RowConstraints(size));
+
         for (int i = 0; i < floorsNumber; i++){
-            elevators.gui.Button button = new elevators.gui.Button(i, this.system);
+            ElevatorButton button = new ElevatorButton(this.system, i);
             buttons.add(button.getvBox());
         }
 
-        int gridWidth = (elevatorsNumber * 2) + 2; // each elevator - 2 cells width and 2 additional for button
-        int gridHeight = floorsNumber * 2; // each floor 2 cells height
+        int currRow =  gridHeight - 2;
+        for (VBox button:buttons){
+            int row =  currRow;
+            int col = 0;
+            gridPane.add(button, col, row, 2, 2);
+            GridPane.setHalignment(button, HPos.CENTER);
+            currRow-=2;
+        }
 
-        drawMap(gridWidth, gridHeight, buttons);
-
+        scroll.setContent(gridPane);
         scroll.setFitToWidth(true);
         scroll.setFitToHeight(true);
 
@@ -175,36 +212,6 @@ public class App extends Application {
         stage.show();
     }
 
-
-    public void drawMap(int gridWidth, int gridHeight, ArrayList<VBox> buttons){
-        gridPane.setGridLinesVisible(true);
-
-        for (int i = 0; i < gridWidth; i++) gridPane.getColumnConstraints().add(new ColumnConstraints(size));
-        for (int i = 0; i < gridHeight; i++) gridPane.getRowConstraints().add(new RowConstraints(size));
-
-        int currRow =  gridHeight - 2;
-        for (VBox button:buttons){
-            int row =  currRow;
-            int col = 0;
-            gridPane.add(button, col, row, 2, 2);
-            GridPane.setHalignment(button, HPos.CENTER);
-            currRow-=2;
-        }
-
-        int elevatorID = 0;
-        for (Elevator elevator : this.system.elevators){
-            int[] position = getElevatorGridPosition(elevatorID, elevator.getCurrentFloor().getFloorID());
-            elevatorID++;
-            VBox lift = new Lift(elevator).getvBox();
-            gridPane.add(lift, position[0], position[1], 2, 2);
-        }
-
-        scene.setRoot(gridPane);
-        stage.setScene(scene);
-        stage.show();
-    }
-
-
     public void styleButtonHover(Button B) {
         B.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> B.setEffect(new DropShadow()));
         B.addEventHandler(MouseEvent.MOUSE_EXITED, e -> B.setEffect(null));
@@ -216,6 +223,16 @@ public class App extends Application {
         int row = 2*floorsNumber -2 - 2*floorID;
         int col = 2 + elevatorID*2;
         return new int[]{col, row};
+    }
+
+    public void draw() throws FileNotFoundException {
+        Platform.runLater(this::drawMap);
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.exit(0);
+        }
     }
 
 }

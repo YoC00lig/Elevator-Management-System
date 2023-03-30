@@ -35,10 +35,15 @@ public class Elevator {
     public void letPassengerIn(Passenger passenger){
         this.system.removePassenger(passenger);
         this.passengersIn.add(passenger);
+        if (!this.stops.contains(passenger.getDestinationFloor())){
+            this.stops.add(passenger.getDestinationFloor());
+        };
     }
 
     public void move(){
-        if (this.currentDirection == Direction.UP){
+        if (this.currentDirection == Direction.IDLE) return;
+
+        else if (this.currentDirection == Direction.UP){
             Floor nextFloor = this.system.getNextFloor(this.currentFloor);
             if (nextFloor == null || checkIfHigherStopExists(this.getCurrentFloor().getFloorID()) == -1) {
                 if (checkIfLowerStopExists(this.getCurrentFloor().getFloorID()) != -1) this.changeDirection(Direction.DOWN);
@@ -48,7 +53,7 @@ public class Elevator {
             if (this.stops.contains(nextFloor)) stops.remove(nextFloor);
             this.changeFloor(nextFloor);
         }
-        else if (this.currentDirection == Direction.DOWN)  {
+        else  {
             Floor prevFloor = this.system.getPrevFloor(this.currentFloor);
             if (prevFloor == null || checkIfLowerStopExists(this.getCurrentFloor().getFloorID()) == -1){
                 if (checkIfHigherStopExists(this.getCurrentFloor().getFloorID()) != -1) this.changeDirection(Direction.UP);
