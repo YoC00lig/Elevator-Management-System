@@ -132,7 +132,7 @@ public class App extends Application {
             this.gridHeight = floorsNumber * 2; // each floor 2 cells height
             this.system = new ElevatorSystem(floorsNumber, elevatorsNumber);
             this.PrepareGrid();
-            engine = new SimulationEngine(this.system, 200, this, true);
+            engine = new SimulationEngine(this.system, 500, this, true);
             thread = new Thread(engine);
             thread.start();
         });

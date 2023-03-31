@@ -54,7 +54,13 @@ public class ElevatorSystem {
 
         for (Elevator elevator : this.elevators) {
             if (elevator.getCurrentDirection() == Direction.IDLE) {
+                if (passenger.getCurrentFloor().getFloorID() >= elevator.getCurrentFloor().getFloorID()){
+                    elevator.changeDirection(Direction.UP);
+                }
+                else elevator.changeDirection(Direction.DOWN);
                 elevator.addStop(passenger.getCurrentFloor());
+                elevator.addStop(passenger.getDestinationFloor());
+                elevator.setNewDestination(passenger.getDestinationFloor());
                 return elevator;
             }
         }
@@ -62,7 +68,8 @@ public class ElevatorSystem {
         Elevator bestPossibleElevator = getPossibleElevator(floorID);
         if (bestPossibleElevator == null) return null;
 
-        // jesli znaleziono najlepsza mozliwa winde, to wpuszczamy pasazera do srodka i dodajemy stop dla tej windy, winda jedzie po niego
+        // jesli znaleziono najlepsza mozliwa winde, to wpuszczamy pasazera do
+        // srodka i dodajemy stop dla tej windy, winda jedzie po niego
         Direction bestElevatorDirection = bestPossibleElevator.getCurrentDirection();
         bestPossibleElevator.letPassengerIn(passenger);
         bestPossibleElevator.addStop(passenger.getCurrentFloor());
