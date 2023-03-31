@@ -8,14 +8,13 @@ public class Elevator {
     private Direction currentDirection;
     private final ElevatorSystem system;
     private ArrayList<Floor> stops;
-    private LinkedList<Passenger> passengersIn;
+    public boolean updated = false;
 
 
     public Elevator(ElevatorSystem system) {
         this.currentDirection = Direction.IDLE;
         this.currentFloor = new Floor(0);
         this.destinationFloor = this.currentFloor;
-        this.passengersIn = new LinkedList<>();
         this.stops = new ArrayList<>();
         this.system = system;
     }
@@ -32,49 +31,62 @@ public class Elevator {
         this.currentFloor = floor;
     }
 
-    public void letPassengerIn(Passenger passenger){
-        this.system.removePassenger(passenger);
-        this.passengersIn.add(passenger);
-        if (!this.stops.contains(passenger.getDestinationFloor())){
-            this.stops.add(passenger.getDestinationFloor());
-        };
-    }
-
     public void move(){
-        if (this.currentDirection == Direction.IDLE) return;
+        if (this.currentDirection == Direction.IDLE) {
+            this.updated = false;
+            return;
+        }
 
         else if (this.currentDirection == Direction.UP){
             Floor nextFloor = this.system.getNextFloor(this.currentFloor);
             if (nextFloor == null || checkIfHigherStopExists(this.getCurrentFloor().getFloorID()) == -1) {
                 if (checkIfLowerStopExists(this.getCurrentFloor().getFloorID()) != -1) this.changeDirection(Direction.DOWN);
                 else this.changeDirection(Direction.IDLE);
-                return;
+                this.updated = false;
             }
-            if (this.stops.contains(nextFloor)) stops.remove(nextFloor);
-            this.changeFloor(nextFloor);
+            else if (this.stops.contains(nextFloor)){
+                stops.remove(nextFloor);
+                this.changeFloor(nextFloor);
+                this.updated = true;
+            }
+            else {
+                this.changeFloor(nextFloor);
+                this.updated = true;
+            }
         }
         else  {
             Floor prevFloor = this.system.getPrevFloor(this.currentFloor);
             if (prevFloor == null || checkIfLowerStopExists(this.getCurrentFloor().getFloorID()) == -1){
                 if (checkIfHigherStopExists(this.getCurrentFloor().getFloorID()) != -1) this.changeDirection(Direction.UP);
                 else this.changeDirection(Direction.IDLE);
-                return;
+                this.updated = false;
             }
-            if (this.stops.contains(prevFloor)) stops.remove(prevFloor);
-            this.changeFloor(prevFloor);
+            else if (this.stops.contains(prevFloor)) {
+                stops.remove(prevFloor);
+                this.changeFloor(prevFloor);
+                this.updated = true;
+            }
+            else {
+                this.changeFloor(prevFloor);
+                this.updated = true;
+            }
         }
     }
 
     public int checkIfHigherStopExists(int floorID){
-        for (Floor floor : this.stops) {
-            if (floor.getFloorID() > floorID) return floor.getFloorID();
+        if (!this.stops.isEmpty()) {
+            for (Floor floor : this.stops) {
+                if (floor.getFloorID() > floorID) return floor.getFloorID();
+            }
         }
         return -1;
     }
 
     public int checkIfLowerStopExists(int floorID){
-        for (Floor floor : this.stops) {
-            if (floor.getFloorID() < floorID) return floor.getFloorID();
+        if (!this.stops.isEmpty()) {
+            for (Floor floor : this.stops) {
+                if (floor.getFloorID() < floorID) return floor.getFloorID();
+            }
         }
         return -1;
     }

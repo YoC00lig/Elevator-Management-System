@@ -39,30 +39,26 @@ public class ElevatorSystem {
         }
     }
 
-    public void removePassenger(Passenger passenger){
-        Floor floor = passenger.getCurrentFloor();
-        this.passengers.get(floor).remove(passenger);
-        if (this.passengers.get(floor).size() == 0) this.passengers.remove(floor);
-    }
-
     public void moveAllElevators() {
         for (Elevator elevator : this.elevators) elevator.move();
     }
 
     public Elevator getElevatorForPassenger(Passenger passenger) {
         int floorID = passenger.getCurrentFloor().getFloorID();
+        Elevator elevator = findIDLEElevator(passenger.getCurrentFloor().getFloorID());
 
-        for (Elevator elevator : this.elevators) {
-            if (elevator.getCurrentDirection() == Direction.IDLE) {
-                if (passenger.getCurrentFloor().getFloorID() >= elevator.getCurrentFloor().getFloorID()){
-                    elevator.changeDirection(Direction.UP);
-                }
-                else elevator.changeDirection(Direction.DOWN);
-                elevator.addStop(passenger.getCurrentFloor());
-                elevator.addStop(passenger.getDestinationFloor());
+
+        if (elevator != null){
+            if (passenger.getCurrentFloor().getFloorID() > elevator.getCurrentFloor().getFloorID()) elevator.changeDirection(Direction.UP);
+            else elevator.changeDirection(Direction.DOWN);
+
+            if (elevator.getCurrentFloor().getFloorID() != passenger.getCurrentFloor().getFloorID()) elevator.addStop(passenger.getCurrentFloor());
+            elevator.addStop(passenger.getDestinationFloor());
+            if (passenger.getDestinationFloor().getFloorID() > elevator.getDestinationFloor().getFloorID()) {
                 elevator.setNewDestination(passenger.getDestinationFloor());
-                return elevator;
             }
+
+            return elevator;
         }
 
         Elevator bestPossibleElevator = getPossibleElevator(floorID);
@@ -71,8 +67,8 @@ public class ElevatorSystem {
         // jesli znaleziono najlepsza mozliwa winde, to wpuszczamy pasazera do
         // srodka i dodajemy stop dla tej windy, winda jedzie po niego
         Direction bestElevatorDirection = bestPossibleElevator.getCurrentDirection();
-        bestPossibleElevator.letPassengerIn(passenger);
-        bestPossibleElevator.addStop(passenger.getCurrentFloor());
+        if (bestPossibleElevator.getCurrentFloor().getFloorID() != passenger.getCurrentFloor().getFloorID()) bestPossibleElevator.addStop(passenger.getCurrentFloor());
+        bestPossibleElevator.addStop(passenger.getDestinationFloor());
 
         int currentDestinationId = bestPossibleElevator.getDestinationFloor().getFloorID();
         int newDestinationId = passenger.getDestinationFloor().getFloorID();
@@ -95,25 +91,39 @@ public class ElevatorSystem {
 
     // szuka windy, która ma podane piętro na swojej aktualnej drodze i ma do niej najblizej
     public Elevator getPossibleElevator(int floorID){
-        int smallestDistance = this.numberOfElevators;
+        int smallestDistance = this.numberOfFloors;
         Elevator nearestElevator = null;
 
         for (Elevator elevator: this.elevators){
-            int distance = this.numberOfElevators;
+            int distance = this.numberOfFloors;
             Direction direction = elevator.getCurrentDirection();
 
-            // jesli jedzie do gory, to dane pietro musi byc wyzej lub takie samo
+            // jesli jedzie do gory, to dane pietro musi byc wyzej
             if (direction == Direction.UP) {
                 distance = floorID - elevator.getCurrentFloor().getFloorID();
                 if (distance < 0) continue;
             }
-            // jesli jedzie na dol, to dane pietro musi byc ponizej lub takie samo
+            // jesli jedzie na dol, to dane pietro musi byc ponizej
             else if (direction == Direction.DOWN){
                 distance = elevator.getCurrentFloor().getFloorID() - floorID;
                 if (distance < 0) continue;
             }
             // zmieniamy najlepszy aktualny wynik, jesli osiagnelismy cos lepszego
             if (distance < smallestDistance && elevator.getCurrentDirection() == direction){
+                nearestElevator = elevator;
+                smallestDistance = distance;
+            }
+        }
+        return nearestElevator;
+    }
+
+    public Elevator findIDLEElevator(int floorID){
+        Elevator nearestElevator = null;
+        int smallestDistance = this.numberOfFloors;
+
+        for (Elevator elevator : this.elevators){
+            int distance = Math.abs(floorID - elevator.getCurrentFloor().getFloorID());
+            if (elevator.getCurrentDirection() == Direction.IDLE && distance < smallestDistance){
                 nearestElevator = elevator;
                 smallestDistance = distance;
             }
