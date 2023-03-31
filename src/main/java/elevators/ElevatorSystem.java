@@ -45,6 +45,36 @@ public class ElevatorSystem {
 
     public Elevator getElevatorForPassenger(Passenger passenger) {
         int floorID = passenger.getCurrentFloor().getFloorID();
+
+        Elevator bestPossibleElevator = getPossibleElevator(floorID);
+        if (bestPossibleElevator != null) {
+
+            // jesli znaleziono najlepsza mozliwa winde, to wpuszczamy pasazera do
+            // srodka i dodajemy stop dla tej windy, winda jedzie po niego
+            Direction bestElevatorDirection = bestPossibleElevator.getCurrentDirection();
+            if (bestPossibleElevator.getCurrentFloor().getFloorID() != passenger.getCurrentFloor().getFloorID())
+                bestPossibleElevator.addStop(passenger.getCurrentFloor());
+            bestPossibleElevator.addStop(passenger.getDestinationFloor());
+
+            int currentDestinationId = bestPossibleElevator.getDestinationFloor().getFloorID();
+            int newDestinationId = passenger.getDestinationFloor().getFloorID();
+
+            // aktualizujemy cel dla danej windy
+            switch (bestElevatorDirection) {
+                case UP -> {
+                    if (currentDestinationId < newDestinationId) {
+                        bestPossibleElevator.setNewDestination(passenger.getDestinationFloor());
+                    }
+                }
+                case DOWN -> {
+                    if (currentDestinationId > newDestinationId) {
+                        bestPossibleElevator.setNewDestination(passenger.getDestinationFloor());
+                    }
+                }
+            }
+            return bestPossibleElevator;
+        }
+
         Elevator elevator = findIDLEElevator(passenger.getCurrentFloor().getFloorID());
 
 
@@ -60,33 +90,8 @@ public class ElevatorSystem {
 
             return elevator;
         }
+        return null;
 
-        Elevator bestPossibleElevator = getPossibleElevator(floorID);
-        if (bestPossibleElevator == null) return null;
-
-        // jesli znaleziono najlepsza mozliwa winde, to wpuszczamy pasazera do
-        // srodka i dodajemy stop dla tej windy, winda jedzie po niego
-        Direction bestElevatorDirection = bestPossibleElevator.getCurrentDirection();
-        if (bestPossibleElevator.getCurrentFloor().getFloorID() != passenger.getCurrentFloor().getFloorID()) bestPossibleElevator.addStop(passenger.getCurrentFloor());
-        bestPossibleElevator.addStop(passenger.getDestinationFloor());
-
-        int currentDestinationId = bestPossibleElevator.getDestinationFloor().getFloorID();
-        int newDestinationId = passenger.getDestinationFloor().getFloorID();
-
-        // aktualizujemy cel dla danej windy
-        switch (bestElevatorDirection){
-            case UP -> {
-                if (currentDestinationId < newDestinationId){
-                    bestPossibleElevator.setNewDestination(passenger.getDestinationFloor());
-                }
-            }
-            case DOWN -> {
-                if (currentDestinationId > newDestinationId){
-                    bestPossibleElevator.setNewDestination(passenger.getDestinationFloor());
-                }
-            }
-        }
-        return bestPossibleElevator;
     }
 
     // szuka windy, która ma podane piętro na swojej aktualnej drodze i ma do niej najblizej

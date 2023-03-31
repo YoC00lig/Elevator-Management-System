@@ -88,6 +88,7 @@ public class App extends Application {
         gridPane.add(vBox, 0, 0);
         gridPane.setAlignment(Pos.CENTER);
 
+        gridPane.setStyle("-fx-background-color: #e6e6ff");
         stage.setScene(new Scene(gridPane, 1500, 800));
         stage.setTitle("Elevator System Management");
         stage.show();
@@ -97,6 +98,7 @@ public class App extends Application {
     public void inputsScene() throws FileNotFoundException {
         gridPane.getChildren().clear();
         gridPane = new GridPane();
+        gridPane.setStyle("-fx-background-color: #e6e6ff");
 
         Label chooseLabel = new Label("Input your values");
         chooseLabel.setFont(new Font("Arial", 50));
@@ -174,6 +176,7 @@ public class App extends Application {
     public void PrepareGrid(){
         gridPane.getChildren().clear();
         gridPane.setGridLinesVisible(true);
+        gridPane.setStyle("-fx-background-color: #e6e6ff");
 
 
         for (int i = 0; i < gridWidth; i++) gridPane.getColumnConstraints().add(new ColumnConstraints(size));
