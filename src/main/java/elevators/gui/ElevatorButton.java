@@ -4,11 +4,10 @@ import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
-
-import java.awt.*;
-import java.io.FileNotFoundException;
-import java.io.FileInputStream;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 public class ElevatorButton {
 
@@ -23,15 +22,17 @@ public class ElevatorButton {
             System.exit(1);
         }
         ImageView imageView = new ImageView(image);
-        imageView.setFitWidth(60);
-        imageView.setFitHeight(60);
+        imageView.setFitWidth(45);
+        imageView.setFitHeight(45);
+
+        Label labelForFloorID = new Label("Floor " + floorID);
 
         TextField signature = new TextField("0");
         signature.setAlignment(Pos.CENTER);
 
         Floor currentFloor = system.getFloorWithId(floorID);
 
-        vBox = new VBox(10, imageView, signature);
+        vBox = new VBox(5, imageView, labelForFloorID, signature);
         vBox.setAlignment(Pos.CENTER);
 
         imageView.setOnMouseClicked(event -> {

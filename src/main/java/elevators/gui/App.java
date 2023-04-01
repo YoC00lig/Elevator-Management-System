@@ -35,12 +35,15 @@ public class App extends Application {
     private BorderPane mainbox = new BorderPane();
     private ElevatorSystem system;
     private ScrollPane scroll = new ScrollPane();
+    private ScrollPane sideBar = new ScrollPane();
     private int floorsNumber, elevatorsNumber;
     Thread thread;
     BorderPane pane = new BorderPane();
     ArrayList<VBox> buttons = new ArrayList<>();
     LinkedHashMap<Elevator, VBox> elevators = new LinkedHashMap<>();
+    ArrayList<ElevatorInformation> informations = new ArrayList<>();
     int gridHeight, gridWidth;
+    private VBox allInformation;
 
     public static void main(String[] args) {
         launch(args);
@@ -155,11 +158,16 @@ public class App extends Application {
         for (Elevator elevator:this.system.elevators){
             if (elevator.updated){
                 gridPane.getChildren().remove(this.elevators.get(elevator));
-                VBox liftBox = new Lift(elevator).getvBox();
+                VBox liftBox = new Lift(elevator, this.system).getvBox();
                 this.elevators.put(elevator,liftBox);
             }
         }
 
+        allInformation.getChildren().clear();
+        for (ElevatorInformation information: this.informations) {
+            information.update();
+            allInformation.getChildren().add(information.getHBox());
+        }
 
         for (Elevator elevator : this.elevators.keySet()){
             if (elevator.updated){
@@ -202,13 +210,30 @@ public class App extends Application {
 
         for (Elevator elevator : this.system.elevators){
             int[] position = getElevatorGridPosition(this.system.elevators.indexOf(elevator), elevator.getCurrentFloor().getFloorID());
-            VBox lift = new Lift(elevator).getvBox();
+            VBox lift = new Lift(elevator, this.system).getvBox();
+            ElevatorInformation liftInformation = new ElevatorInformation(elevator, this.system);
+            informations.add(liftInformation);
             gridPane.add(lift, position[0], position[1], 2, 2);
             this.elevators.put(elevator, lift);
         }
 
+        this.allInformation = new VBox();
+        for (ElevatorInformation information:this.informations) allInformation.getChildren().add(information.getHBox());
+        allInformation.setStyle("-fx-background-color: #f7cac9");
+        allInformation.setPrefWidth(300);
+        allInformation.setPrefHeight(800);
+        allInformation.setSpacing(20);
+        allInformation.setAlignment(Pos.CENTER);
+        sideBar.setContent(allInformation);
+        scroll.setPrefWidth(1200);
+        sideBar.setPrefWidth(300);
+        sideBar.setStyle("-fx-background-color: #f7cac9");
+        sideBar.setEffect(new DropShadow());
+        HBox allScrollPanes = new HBox(scroll, sideBar);
+
+
         this.mainbox.setTop(pane);
-        this.mainbox.setCenter(scroll);
+        this.mainbox.setCenter(allScrollPanes);
         BorderPane.setAlignment(scroll, Pos.CENTER);
         gridPane.setAlignment(Pos.CENTER);
 

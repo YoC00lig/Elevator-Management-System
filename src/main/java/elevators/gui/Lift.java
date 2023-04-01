@@ -1,5 +1,6 @@
 package elevators.gui;
 
+import elevators.ElevatorSystem;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -13,7 +14,7 @@ public class Lift {
 
     private final VBox vBox;
 
-    public Lift(Elevator elevator){
+    public Lift(Elevator elevator, ElevatorSystem system){
         Image image = null;
         try {
             image = new Image(new FileInputStream("src/main/resources/lift.png"));
@@ -25,12 +26,11 @@ public class Lift {
         imageView.setFitWidth(60);
         imageView.setFitHeight(60);
 
-        int currFloor = elevator.getCurrentFloor().getFloorID();
-        Label l = new Label("Current: " + currFloor);
+
+        Label l = new Label("Elevator " + system.elevators.indexOf(elevator));
 
         vBox = new VBox(10,imageView, l);
         vBox.setAlignment(Pos.CENTER);
-//        vBox.setStyle("-fx-background-color: #f7caa9");
     }
 
     public VBox getvBox()  {
