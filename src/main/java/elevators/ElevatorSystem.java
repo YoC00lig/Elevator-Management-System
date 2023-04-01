@@ -37,6 +37,10 @@ public class ElevatorSystem {
                 this.passengers.get(floor).add(passenger);
             }
         }
+        else {
+            if(passenger.getCurrentFloor() != elevator.getCurrentFloor()) elevator.addStop(passenger.getCurrentFloor());
+            elevator.waitingPassengers.add(passenger);
+        }
     }
 
     public void moveAllElevators() {
@@ -45,16 +49,13 @@ public class ElevatorSystem {
 
     public Elevator getElevatorForPassenger(Passenger passenger) {
         int floorID = passenger.getCurrentFloor().getFloorID();
+        Elevator elevator = findIDLEElevator(passenger.getCurrentFloor().getFloorID());
 
         Elevator bestPossibleElevator = getPossibleElevator(floorID);
         if (bestPossibleElevator != null) {
 
-            // jesli znaleziono najlepsza mozliwa winde, to wpuszczamy pasazera do
-            // srodka i dodajemy stop dla tej windy, winda jedzie po niego
+
             Direction bestElevatorDirection = bestPossibleElevator.getCurrentDirection();
-            if (bestPossibleElevator.getCurrentFloor().getFloorID() != passenger.getCurrentFloor().getFloorID())
-                bestPossibleElevator.addStop(passenger.getCurrentFloor());
-            bestPossibleElevator.addStop(passenger.getDestinationFloor());
 
             int currentDestinationId = bestPossibleElevator.getDestinationFloor().getFloorID();
             int newDestinationId = passenger.getDestinationFloor().getFloorID();
@@ -72,26 +73,24 @@ public class ElevatorSystem {
                     }
                 }
             }
+            System.out.println("PAssenger from " +passenger.getCurrentFloor().getFloorID() + " to " + passenger.getDestinationFloor().getFloorID() + " best possible elevator ");
             return bestPossibleElevator;
         }
 
-        Elevator elevator = findIDLEElevator(passenger.getCurrentFloor().getFloorID());
 
-
-        if (elevator != null){
-            if (passenger.getCurrentFloor().getFloorID() > elevator.getCurrentFloor().getFloorID()) elevator.changeDirection(Direction.UP);
-            else elevator.changeDirection(Direction.DOWN);
-
-            if (elevator.getCurrentFloor().getFloorID() != passenger.getCurrentFloor().getFloorID()) elevator.addStop(passenger.getCurrentFloor());
-            elevator.addStop(passenger.getDestinationFloor());
-            if (passenger.getDestinationFloor().getFloorID() > elevator.getDestinationFloor().getFloorID()) {
-                elevator.setNewDestination(passenger.getDestinationFloor());
+        else if (elevator != null){
+            if (passenger.getCurrentFloor().getFloorID() > elevator.getCurrentFloor().getFloorID()) {
+                elevator.changeDirection(Direction.UP);
+                elevator.setNewDestination(passenger.getCurrentFloor());
             }
-
+            else {
+                elevator.changeDirection(Direction.DOWN);
+                if (passenger.getCurrentFloor().getFloorID() < elevator.getCurrentFloor().getFloorID()) elevator.setNewDestination(passenger.getCurrentFloor());
+            }
+            System.out.println("PAssenger from " +passenger.getCurrentFloor().getFloorID() + " to " + passenger.getDestinationFloor().getFloorID() + " idle elevator ");
             return elevator;
         }
         return null;
-
     }
 
     // szuka windy, która ma podane piętro na swojej aktualnej drodze i ma do niej najblizej

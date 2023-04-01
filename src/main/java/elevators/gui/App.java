@@ -115,12 +115,12 @@ public class App extends Application {
         styleButtonHover(proceed);
         styleButtonHover(end);
 
-        TextField numberOfFloors = new TextField("2");
+        TextField numberOfFloors = new TextField("20");
         numberOfFloors.setAlignment(Pos.CENTER);
         Label numberOfFloorsLabel = new Label("Enter number of floors:");
         HBox input1 = new HBox(40, numberOfFloorsLabel, numberOfFloors);
 
-        TextField numberOfElevators = new TextField("2");
+        TextField numberOfElevators = new TextField("10");
         numberOfElevators.setAlignment(Pos.CENTER);
         Label numberOfElevatorsLabel = new Label("Enter number of elevators:");
         HBox input2 = new HBox(25, numberOfElevatorsLabel, numberOfElevators);
@@ -128,6 +128,7 @@ public class App extends Application {
         VBox inputs = new VBox(20,input1,input2);
         inputs.setAlignment(Pos.CENTER);
 
+        end.setOnMouseClicked(event -> System.exit(0));
 
         proceed.setOnMouseClicked(event -> {
             floorsNumber = Integer.parseInt(numberOfFloors.getText());
