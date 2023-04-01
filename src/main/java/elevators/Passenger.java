@@ -1,13 +1,6 @@
 package elevators;
 
-public class Passenger {
-    private final Floor currentFloor, destinationFloor;
-
-    public Passenger(Floor currentFloor, Floor destinationFloor){
-        this.currentFloor = currentFloor;
-        this.destinationFloor = destinationFloor;
-    }
-
+public record Passenger(Floor currentFloor, Floor destinationFloor) {
     public Floor getCurrentFloor() {
         return this.currentFloor;
     }

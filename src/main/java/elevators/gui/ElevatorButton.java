@@ -38,6 +38,7 @@ public class ElevatorButton {
         imageView.setOnMouseClicked(event -> {
             int destinationFloorID = Integer.parseInt(signature.getText());
             if (destinationFloorID != floorID) {
+                if (destinationFloorID >= system.numberOfFloors) throw new IllegalArgumentException("Floor " + destinationFloorID + " does not exist");
                 Floor destinationFloor = system.getFloorWithId(destinationFloorID);
                 Passenger newPassenger = new Passenger(currentFloor, destinationFloor);
                 system.addWaitingPassenger(newPassenger);

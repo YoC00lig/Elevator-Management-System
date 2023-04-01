@@ -2,16 +2,14 @@ package elevators;
 import elevators.gui.App;
 import java.io.FileNotFoundException;
 
-public class SimulationEngine implements IEngine, Runnable {
+public class SimulationEngine implements Runnable {
 
-    private final int moveDelay;
     private final ElevatorSystem system;
     private final App app;
-    private int iter = 0;
     public boolean running;
 
-    public SimulationEngine(ElevatorSystem system, int moveDelay, App app, boolean running) {
-        this.moveDelay = moveDelay;
+    public SimulationEngine(ElevatorSystem system, App app, boolean running) {
+
         this.system = system;
         this.app = app;
         this.running = running;

@@ -40,7 +40,7 @@ public class App extends Application {
     private final BorderPane pane = new BorderPane();
     private final ArrayList<VBox> buttons = new ArrayList<>();
     private final LinkedHashMap<Elevator, VBox> elevators = new LinkedHashMap<>();
-    private final ArrayList<ElevatorInformation> informations = new ArrayList<>();
+    private final ArrayList<ElevatorInformation> liftDescription = new ArrayList<>();
     private VBox allInformation;
 
     public static void main(String[] args) {
@@ -50,9 +50,7 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
         stage.setResizable(false);
-        stage.setOnCloseRequest( e -> {
-            System.exit(0);
-        });
+        stage.setOnCloseRequest( e -> System.exit(0));
 
         gridPane.getChildren().clear();
         gridPane = new GridPane();
@@ -135,7 +133,7 @@ public class App extends Application {
             this.gridHeight = floorsNumber * 2; // each floor 2 cells height
             this.system = new ElevatorSystem(floorsNumber, elevatorsNumber);
             this.PrepareGrid();
-            engine = new SimulationEngine(this.system, 500, this, true);
+            engine = new SimulationEngine(this.system, this, true);
             thread = new Thread(engine);
             thread.start();
         });
@@ -163,7 +161,7 @@ public class App extends Application {
         }
 
         allInformation.getChildren().clear();
-        for (ElevatorInformation information: this.informations) {
+        for (ElevatorInformation information: this.liftDescription) {
             information.update();
             allInformation.getChildren().add(information.getHBox());
         }
@@ -212,13 +210,13 @@ public class App extends Application {
             int[] position = getElevatorGridPosition(this.system.elevators.indexOf(elevator), elevator.getCurrentFloor().getFloorID());
             VBox lift = new Lift(elevator, this.system).getvBox();
             ElevatorInformation liftInformation = new ElevatorInformation(elevator, this.system);
-            informations.add(liftInformation);
+            liftDescription.add(liftInformation);
             gridPane.add(lift, position[0], position[1], 2, 2);
             this.elevators.put(elevator, lift);
         }
 
         this.allInformation = new VBox();
-        for (ElevatorInformation information:this.informations) allInformation.getChildren().add(information.getHBox());
+        for (ElevatorInformation information:this.liftDescription) allInformation.getChildren().add(information.getHBox());
         allInformation.setStyle("-fx-background-color: #f7cac9");
         allInformation.setPrefWidth(300);
         allInformation.setPrefHeight(800);
@@ -250,7 +248,7 @@ public class App extends Application {
     }
 
     public int[] getElevatorGridPosition(int elevatorID, int floorID){
-        int row = 2*floorsNumber -2 - 2*floorID;
+        int row = 2*floorsNumber-2 - 2*floorID;
         int col = 2 + elevatorID*2;
         return new int[]{col, row};
     }

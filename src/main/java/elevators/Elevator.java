@@ -60,7 +60,7 @@ public class Elevator {
                 this.letPassengersIn(nextFloor.getFloorID());
                 this.updated = true;
             }
-            else if (currHighestStop.getFloorID() != this.currentFloor.getFloorID()) {
+            else {
                 this.changeFloor(nextFloor);
                 this.updated = true;
             }
@@ -82,7 +82,7 @@ public class Elevator {
                 this.letPassengersIn(prevFloor.getFloorID());
                 this.updated = true;
             }
-            else if (currLowestStop.getFloorID() != this.currentFloor.getFloorID()){
+            else {
                 this.changeFloor(prevFloor);
                 this.updated = true;
             }

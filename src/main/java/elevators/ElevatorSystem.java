@@ -1,8 +1,6 @@
 package elevators;
 
 import java.util.ArrayList;
-import  java.util.LinkedList;
-import java.util.LinkedHashMap;
 
 public class ElevatorSystem {
     public ArrayList<Floor> floors;
@@ -38,7 +36,7 @@ public class ElevatorSystem {
     public Elevator getElevatorForPassenger(Passenger passenger) {
         int floorID = passenger.getCurrentFloor().getFloorID();
 
-        Elevator bestPossibleElevator = getPossibleElevator(floorID);
+        Elevator bestPossibleElevator = getPossibleMovingElevator(floorID);
         if (bestPossibleElevator != null) return bestPossibleElevator;
 
         bestPossibleElevator = findIDLEElevator(passenger.getCurrentFloor().getFloorID());
@@ -51,7 +49,7 @@ public class ElevatorSystem {
     }
 
 
-    public Elevator getPossibleElevator(int floorID){
+    public Elevator getPossibleMovingElevator(int floorID){
         int smallestDistance = this.numberOfFloors;
         Elevator nearestElevator = null;
 
@@ -92,23 +90,19 @@ public class ElevatorSystem {
     }
 
     public Floor getFloorWithId(int floorID){
-        for (Floor floor: this.floors){
-            if (floor.getFloorID() == floorID) return floor;
-        }
-        return null;
+        if (floorID < this.numberOfFloors) return this.floors.get(floorID);
+        else return null;
     }
 
     public Floor getNextFloor(Floor currentFloor) {
-        for (Floor floor: this.floors){
-            if (floor.getFloorID() == currentFloor.getFloorID() + 1) return floor;
-        }
-        return null;
+        int idx = currentFloor.getFloorID();
+        if (idx + 1< this.numberOfFloors) return this.floors.get(idx+1);
+        else return null;
     }
 
     public Floor getPrevFloor(Floor currentFloor) {
-        for (Floor floor: this.floors){
-            if (floor.getFloorID() == currentFloor.getFloorID() - 1) return floor;
-        }
-        return null;
+        int idx = currentFloor.getFloorID();
+        if (idx - 1 >= 0) return this.floors.get(idx-1);
+        else return null;
     }
 }
