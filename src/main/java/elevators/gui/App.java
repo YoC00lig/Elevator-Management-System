@@ -28,21 +28,19 @@ import javafx.application.Platform;
 public class App extends Application {
     private GridPane gridPane = new GridPane();
     private final Stage stage = new Stage();
-    private final int size = 50;
     private SimulationEngine engine;
 
     private Scene scene;
-    private BorderPane mainbox = new BorderPane();
+    private final BorderPane mainbox = new BorderPane();
     private ElevatorSystem system;
-    private ScrollPane scroll = new ScrollPane();
-    private ScrollPane sideBar = new ScrollPane();
-    private int floorsNumber, elevatorsNumber;
-    Thread thread;
-    BorderPane pane = new BorderPane();
-    ArrayList<VBox> buttons = new ArrayList<>();
-    LinkedHashMap<Elevator, VBox> elevators = new LinkedHashMap<>();
-    ArrayList<ElevatorInformation> informations = new ArrayList<>();
-    int gridHeight, gridWidth;
+    private final ScrollPane scroll = new ScrollPane();
+    private final ScrollPane sideBar = new ScrollPane();
+    private int floorsNumber, elevatorsNumber, gridHeight, gridWidth;
+    private Thread thread;
+    private final BorderPane pane = new BorderPane();
+    private final ArrayList<VBox> buttons = new ArrayList<>();
+    private final LinkedHashMap<Elevator, VBox> elevators = new LinkedHashMap<>();
+    private final ArrayList<ElevatorInformation> informations = new ArrayList<>();
     private VBox allInformation;
 
     public static void main(String[] args) {
@@ -188,6 +186,7 @@ public class App extends Application {
         gridPane.setStyle("-fx-background-color: #e6e6ff");
 
 
+        int size = 50;
         for (int i = 0; i < gridWidth; i++) gridPane.getColumnConstraints().add(new ColumnConstraints(size));
         for (int i = 0; i < gridHeight; i++) gridPane.getRowConstraints().add(new RowConstraints(size));
 

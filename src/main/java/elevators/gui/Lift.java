@@ -26,7 +26,6 @@ public class Lift {
         imageView.setFitWidth(60);
         imageView.setFitHeight(60);
 
-
         Label l = new Label("Elevator " + system.elevators.indexOf(elevator));
 
         vBox = new VBox(10,imageView, l);

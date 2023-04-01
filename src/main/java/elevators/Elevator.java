@@ -35,7 +35,8 @@ public class Elevator {
     }
 
     public void move(){
-
+        Floor currHighestStop = findHighestFloor();
+        Floor currLowestStop = findLowestFloor();
 
         if (this.currentDirection == Direction.IDLE) {
             this.setNewDestination(this.currentFloor);
@@ -43,10 +44,13 @@ public class Elevator {
         }
 
         else if (this.currentDirection == Direction.UP){
-
             Floor nextFloor = this.system.getNextFloor(this.currentFloor);
-            if (nextFloor == null || checkIfHigherStopExists(this.getCurrentFloor().getFloorID()) == -1) {
-                if (checkIfLowerStopExists(this.getCurrentFloor().getFloorID()) != -1) this.changeDirection(Direction.DOWN);
+            this.setNewDestination(currHighestStop);
+            if (nextFloor == null || currHighestStop.getFloorID() == this.currentFloor.getFloorID()) {
+                if (findLowestFloor().getFloorID() != this.currentFloor.getFloorID()) {
+                    this.changeDirection(Direction.DOWN);
+                    this.setNewDestination(this.findLowestFloor());
+                }
                 else this.changeDirection(Direction.IDLE);
                 this.updated = false;
             }
@@ -56,16 +60,19 @@ public class Elevator {
                 this.letPassengersIn(nextFloor.getFloorID());
                 this.updated = true;
             }
-            else if (checkIfHigherStopExists(this.getCurrentFloor().getFloorID()) != -1) {
+            else if (currHighestStop.getFloorID() != this.currentFloor.getFloorID()) {
                 this.changeFloor(nextFloor);
                 this.updated = true;
             }
         }
         else  {
-
             Floor prevFloor = this.system.getPrevFloor(this.currentFloor);
-            if (prevFloor == null || checkIfLowerStopExists(this.getCurrentFloor().getFloorID()) == -1){
-                if (checkIfHigherStopExists(this.getCurrentFloor().getFloorID()) != -1) this.changeDirection(Direction.UP);
+            this.setNewDestination(currLowestStop);
+            if (prevFloor == null || currLowestStop.getFloorID() == this.currentFloor.getFloorID()){
+                if (currHighestStop.getFloorID() != this.currentFloor.getFloorID()) {
+                    this.changeDirection(Direction.UP);
+                    this.setNewDestination(this.findHighestFloor());
+                }
                 else this.changeDirection(Direction.IDLE);
                 this.updated = false;
             }
@@ -75,29 +82,35 @@ public class Elevator {
                 this.letPassengersIn(prevFloor.getFloorID());
                 this.updated = true;
             }
-            else if (checkIfLowerStopExists(this.getCurrentFloor().getFloorID()) != -1){
+            else if (currLowestStop.getFloorID() != this.currentFloor.getFloorID()){
                 this.changeFloor(prevFloor);
                 this.updated = true;
             }
         }
     }
 
-    public int checkIfHigherStopExists(int floorID){
-        if (!this.stops.isEmpty()) {
-            for (Floor floor : this.stops) {
-                if (floor.getFloorID() >= floorID) return floor.getFloorID();
+    public Floor findLowestFloor(){
+        int lowest = this.currentFloor.getFloorID();
+        Floor lowestFloor = this.currentFloor;
+        for (Floor floor : this.stops) {
+            if (floor.getFloorID() < lowest) {
+                lowest = floor.getFloorID();
+                lowestFloor = floor;
             }
         }
-        return -1;
+        return lowestFloor;
     }
 
-    public int checkIfLowerStopExists(int floorID){
-        if (!this.stops.isEmpty()) {
-            for (Floor floor : this.stops) {
-                if (floor.getFloorID() <= floorID) return floor.getFloorID();
+    public Floor findHighestFloor(){
+        int highest = this.currentFloor.getFloorID();
+        Floor highestFloor = this.currentFloor;
+        for (Floor floor : this.stops) {
+            if (floor.getFloorID() > highest) {
+                highest = floor.getFloorID();
+                highestFloor = floor;
             }
         }
-        return -1;
+        return highestFloor;
     }
 
     public void letPassengersIn(int floorID){
@@ -113,6 +126,7 @@ public class Elevator {
         }
         for (Passenger passenger:toUpdate) this.waitingPassengers.remove(passenger);
     }
+
     public void setNewDestination(Floor floor){
         this.destinationFloor = floor;
     }

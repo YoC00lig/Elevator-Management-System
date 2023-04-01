@@ -41,7 +41,6 @@ public class ElevatorButton {
                 Floor destinationFloor = system.getFloorWithId(destinationFloorID);
                 Passenger newPassenger = new Passenger(currentFloor, destinationFloor);
                 system.addWaitingPassenger(newPassenger);
-                System.out.println("Passenger added: His current floor: " +  currentFloor.getFloorID() + " his destination: " + destinationFloor.getFloorID());
             }
         });
 
