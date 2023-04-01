@@ -38,8 +38,11 @@ public class ElevatorSystem {
             }
         }
         else {
-            if(passenger.getCurrentFloor() != elevator.getCurrentFloor()) elevator.addStop(passenger.getCurrentFloor());
-            elevator.waitingPassengers.add(passenger);
+            if(passenger.getCurrentFloor().getFloorID() != elevator.getCurrentFloor().getFloorID()) {
+                elevator.addStop(passenger.getCurrentFloor());
+                elevator.waitingPassengers.add(passenger);
+            }
+            else elevator.addStop(passenger.getDestinationFloor());
         }
     }
 

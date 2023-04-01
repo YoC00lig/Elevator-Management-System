@@ -40,7 +40,6 @@ public class Elevator {
         if (this.currentDirection == Direction.IDLE) {
             this.setNewDestination(this.currentFloor);
             this.updated = false;
-            return;
         }
 
         else if (this.currentDirection == Direction.UP){
