@@ -1,5 +1,5 @@
 <h1> ⚙️ Elevator management system</h1>
-<p> Application presenting a simulation of an elevator management system. </p>
+<p> The program presents an algorithm that handles the elevator management system. It also provides a visualization of the designed algorithm and allows the user to try it out. </p>
 
 
 <h3> ▫️ Algorithm: </h3>
@@ -11,7 +11,7 @@
   <li> If there are no more stops in the direction in which the elevator is moving, it changes direction (if there are stops in the opposite direction) or becomes IDLE (if there are no more stops).</li>
 </ul>
 
-<h3> ▫️ Performance: </h3>
+<h3> ▫️ Example: </h3>
 <p> I believe that my algorithm is optimal and performs better than the "First Come, First Serve" algorithm. Let's consider a scenario where passengers are waiting on the first, fifth, and eighth floors, and we have only one elevator. If the requests are sent first by the passenger on the first floor, then the eighth floor, and finally the fifth floor, even though the elevator will pass the fifth floor where a passenger is waiting, it will not pick them up. It will have to return for them later, adding extra distance and time. In such a situation, my algorithm will pick up the person waiting on the fifth floor before person waiting on eight floor, because fifth floor will be on its route to eight floor.</p>
 
 <h3> ▫️ Technologies used: </h3>
@@ -20,6 +20,19 @@
 <li>JavaFX</li>
 <li>Gradle</li>
 </ul>
+
+<h3> ▫️ Run a program: </h3> 
+<p> To run the program you can execute the following command:
+
+```
+./gradlew run
+```
+
+<p> or: </p>
+
+```
+./gradlew -q --console plain run
+```
 
 <h3> ▫️ Application presentation: </h3> 
 <p> The application will first ask for data. Remember that the number of elevators must be less than or equal to 16. Otherwise, the program will throw an IllegalArgumentException. </p>
