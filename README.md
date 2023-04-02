@@ -28,7 +28,7 @@
 ./gradlew run
 ```
 
-<p> or: </p>
+<p> or to avoid gradle command prompt use: </p>
 
 ```
 ./gradlew -q --console plain run
