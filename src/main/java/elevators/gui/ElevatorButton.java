@@ -9,7 +9,7 @@ import javafx.scene.control.Label;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-public class ElevatorButton {
+public class ElevatorButton {  // Represents a red button in the simulation.
 
     private final VBox vBox;
 
@@ -35,10 +35,17 @@ public class ElevatorButton {
         vBox = new VBox(5, imageView, labelForFloorID, signature);
         vBox.setAlignment(Pos.CENTER);
 
+        // After the user clicks the button, it sends information to the elevator system about adding a new passenger.
         imageView.setOnMouseClicked(event -> {
             int destinationFloorID = Integer.parseInt(signature.getText());
+
+            // The number of elevators must be within the range of 0 to maximum floor index
+            if (destinationFloorID >= system.numberOfFloors || destinationFloorID < 0) {
+                throw new IllegalArgumentException("Floor " + destinationFloorID + " does not exist");
+            }
+
+            // It doesn't make sense to add a passenger who is already at the destination they want to reach.
             if (destinationFloorID != floorID) {
-                if (destinationFloorID >= system.numberOfFloors) throw new IllegalArgumentException("Floor " + destinationFloorID + " does not exist");
                 Floor destinationFloor = system.getFloorWithId(destinationFloorID);
                 Passenger newPassenger = new Passenger(currentFloor, destinationFloor);
                 system.addWaitingPassenger(newPassenger);

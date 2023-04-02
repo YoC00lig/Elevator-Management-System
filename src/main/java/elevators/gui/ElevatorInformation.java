@@ -14,12 +14,14 @@ import java.io.FileNotFoundException;
 
 
 public class ElevatorInformation {
-    HBox box;
-    VBox vbox1, vbox2;
-    Elevator elevator;
-    ElevatorSystem system;
+    private HBox box;
+    private VBox vbox1;
+    private final VBox vbox2;
+    private final Elevator elevator;
+    private final ElevatorSystem system;
     Image image = null;
 
+    // The element on the side panel that corresponds to a particular elevator and describes its current state.
     public ElevatorInformation(Elevator elevator, ElevatorSystem system){
         this.elevator = elevator;
         this.system = system;

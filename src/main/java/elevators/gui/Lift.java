@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 
 public class Lift {
 
+    // is responsible for visualizing the elevator.
     private final VBox vBox;
 
     public Lift(Elevator elevator, ElevatorSystem system){

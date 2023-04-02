@@ -47,11 +47,10 @@ public class App extends Application {
         launch(args);
     }
 
+    // Designing a start scene
     @Override
     public void start(Stage primaryStage) {
         stage.setResizable(false);
-        stage.setOnCloseRequest( e -> System.exit(0));
-
         gridPane.getChildren().clear();
         gridPane = new GridPane();
 
@@ -94,6 +93,7 @@ public class App extends Application {
 
     }
 
+    // Designing a scene containing inputs.
     public void inputsScene() throws FileNotFoundException {
         gridPane.getChildren().clear();
         gridPane = new GridPane();
@@ -126,14 +126,27 @@ public class App extends Application {
 
         end.setOnMouseClicked(event -> System.exit(0));
 
-        proceed.setOnMouseClicked(event -> {
+        proceed.setOnMouseClicked(event -> { // The button saves the entered data and starts the simulation.
             floorsNumber = Integer.parseInt(numberOfFloors.getText());
             elevatorsNumber = Integer.parseInt(numberOfElevators.getText());
+
+            // throwing exceptions
+            if (floorsNumber <= 0) throw new IllegalArgumentException("Invalid number of floors");
+            if (elevatorsNumber > 16 || elevatorsNumber <= 0) throw new IllegalArgumentException("Invalid number of elevators");
+
             this.gridWidth = (elevatorsNumber * 2) + 2; // each elevator - 2 cells width and 2 additional for button
             this.gridHeight = floorsNumber * 2; // each floor 2 cells height
             this.system = new ElevatorSystem(floorsNumber, elevatorsNumber);
+
             this.PrepareGrid();
+
             engine = new SimulationEngine(this.system, this, true);
+
+            stage.setOnCloseRequest( e -> {
+                System.exit(0);
+                this.engine.running = false;
+            });
+
             thread = new Thread(engine);
             thread.start();
         });
@@ -151,22 +164,23 @@ public class App extends Application {
         stage.show();
     }
 
+    // It redraws on the map the elements whose position has changed.
     public void drawMap(){
         for (Elevator elevator:this.system.elevators){
-            if (elevator.updated){
+            if (elevator.updated){ // Elevators whose position has been changed must be assigned a new VBox.
                 gridPane.getChildren().remove(this.elevators.get(elevator));
                 VBox liftBox = new Lift(elevator, this.system).getvBox();
-                this.elevators.put(elevator,liftBox);
+                this.elevators.put(elevator, liftBox);
             }
         }
 
         allInformation.getChildren().clear();
         for (ElevatorInformation information: this.liftDescription) {
-            information.update();
+            information.update();  // It updates the information about elevators in the sidebar
             allInformation.getChildren().add(information.getHBox());
         }
 
-        for (Elevator elevator : this.elevators.keySet()){
+        for (Elevator elevator : this.elevators.keySet()){ // Redrawing the elevators whose position has changed.
             if (elevator.updated){
                 int[] position = getElevatorGridPosition(this.system.elevators.indexOf(elevator), elevator.getCurrentFloor().getFloorID());
                 VBox lift = this.elevators.get(elevator);
@@ -178,6 +192,7 @@ public class App extends Application {
         stage.show();
     }
 
+    // It helps to prepare a map and place elements on it that will not be redrawn during the simulation.
     public void PrepareGrid(){
         gridPane.getChildren().clear();
         gridPane.setGridLinesVisible(true);
@@ -240,6 +255,7 @@ public class App extends Application {
         stage.show();
     }
 
+    // function to style buttons
     public void styleButtonHover(Button B) {
         B.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> B.setEffect(new DropShadow()));
         B.addEventHandler(MouseEvent.MOUSE_EXITED, e -> B.setEffect(null));
@@ -247,6 +263,7 @@ public class App extends Application {
         B.setFont(new Font("Arial", 14));
     }
 
+    // The function helps to place elements to specific indices in a GridPane.
     public int[] getElevatorGridPosition(int elevatorID, int floorID){
         int row = 2*floorsNumber-2 - 2*floorID;
         int col = 2 + elevatorID*2;

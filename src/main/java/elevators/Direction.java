@@ -1,7 +1,7 @@
 package elevators;
 
-public enum Direction {
+public enum Direction { // It contains the directions that the elevator can take.
     UP,
     DOWN,
-    IDLE
+    IDLE // indicates that the elevator is currently not moving.
 }

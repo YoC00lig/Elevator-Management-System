@@ -8,6 +8,7 @@ public class SimulationEngine implements Runnable {
     private final App app;
     public boolean running;
 
+    // The engine providing the functionality of the application.
     public SimulationEngine(ElevatorSystem system, App app, boolean running) {
 
         this.system = system;

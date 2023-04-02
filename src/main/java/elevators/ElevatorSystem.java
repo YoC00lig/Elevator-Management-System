@@ -1,6 +1,7 @@
 package elevators;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ElevatorSystem {
     public ArrayList<Floor> floors;
@@ -18,6 +19,8 @@ public class ElevatorSystem {
     }
 
 
+    // The system searches for the best possible elevator for the passenger
+    // and assigns the passenger to the waiting list of that elevator.
     public void addWaitingPassenger(Passenger passenger){
         Elevator elevator = getElevatorForPassenger(passenger);
         if (elevator != null){
@@ -33,6 +36,10 @@ public class ElevatorSystem {
         for (Elevator elevator : this.elevators) elevator.move();
     }
 
+    // The function first searches for a lift that is already moving
+    // and has the passenger's floor on its route, but if one does not exist,
+    // it sends the lift that is in the IDLE state. If there is no elevator that
+    // meets these criteria, then the elevator with the closest destination to the given floor is chosen.
     public Elevator getElevatorForPassenger(Passenger passenger) {
         int floorID = passenger.getCurrentFloor().getFloorID();
 
@@ -45,10 +52,10 @@ public class ElevatorSystem {
             else bestPossibleElevator.changeDirection(Direction.DOWN);
             return bestPossibleElevator;
         }
-        return null;
+        return findNearest(floorID);
     }
 
-
+    // Searching for an elevator that is moving and has the given floor on its route.
     public Elevator getPossibleMovingElevator(int floorID){
         int smallestDistance = this.numberOfFloors;
         Elevator nearestElevator = null;
@@ -75,6 +82,7 @@ public class ElevatorSystem {
         return nearestElevator;
     }
 
+    // Searching for the elevator closest to a given floor that is in the IDLE state.
     public Elevator findIDLEElevator(int floorID){
         Elevator nearestElevator = null;
         int smallestDistance = this.numberOfFloors;
@@ -89,20 +97,34 @@ public class ElevatorSystem {
         return nearestElevator;
     }
 
-    public Floor getFloorWithId(int floorID){
-        if (floorID < this.numberOfFloors) return this.floors.get(floorID);
-        else return null;
+    // finding elevator with the closest destination to the given floor
+    public Elevator findNearest(int floorID) {
+        int distance = this.numberOfFloors;
+        Elevator result = null;
+        for (Elevator elevator : this.elevators){
+            int newDistance = Math.abs(elevator.getDestinationFloor().getFloorID() - floorID);
+            if (newDistance < distance){
+                distance =  newDistance;
+                result = elevator;
+            }
+        }
+        return result;
     }
 
+    // Finding the floor with given id
+    public Floor getFloorWithId(int floorID){
+        return (floorID < this.numberOfFloors) ? this.floors.get(floorID) : null;
+    }
+
+    //  Finding the next/previous floor.
     public Floor getNextFloor(Floor currentFloor) {
         int idx = currentFloor.getFloorID();
-        if (idx + 1< this.numberOfFloors) return this.floors.get(idx+1);
-        else return null;
+        return (idx + 1 < this.numberOfFloors) ? this.floors.get(idx + 1) : null;
     }
 
     public Floor getPrevFloor(Floor currentFloor) {
         int idx = currentFloor.getFloorID();
-        if (idx - 1 >= 0) return this.floors.get(idx-1);
-        else return null;
+        return (idx - 1 >= 0) ? this.floors.get(idx - 1) : null;
     }
+
 }
