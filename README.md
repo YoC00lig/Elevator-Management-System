@@ -22,7 +22,7 @@
 </ul>
 
 <h3> ▫️ Run a program: </h3> 
-<p> To run the program you can execute the following command:
+<p> To run the program you can execute the following commands:
 
 ```
 ./gradlew run
