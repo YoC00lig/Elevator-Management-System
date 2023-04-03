@@ -32,7 +32,7 @@ public class ElevatorTest {
 
     @Test
     public void findElevatorTest(){
-        assertEquals(this.system.findIDLEElevator(1), this.system.elevators.get(0));
+        assertEquals(this.system.findNearestIDLEElevator(1), this.system.elevators.get(0));
         assertNull(this.system.getPossibleMovingElevator(1));
     }
 

@@ -9,8 +9,8 @@ public class Elevator {
     private final ElevatorSystem system;
     public ArrayList<Floor> stops;
     /// The flag "updated" indicates whether the elevator changes its position in the current step
-    // (needed for visualizing the algorithm, so that we only draw elevators that
-    // actually changed their position instead of redrawing all of them every time).
+    // (needed for visualizing the algorithm), so that we only change elevators that
+    // actually changed their position instead of changing all of them every time.
     public boolean updated = false;
     ArrayList<Passenger> waitingPassengers = new ArrayList<>(); // The passengers assigned to a given elevator by the system.
 
@@ -54,7 +54,7 @@ public class Elevator {
         if (prevFloor == null || currLowestStop.getFloorID() == this.currentFloor.getFloorID()){
             if (currHighestStop.getFloorID() != this.currentFloor.getFloorID()) {
                 this.changeDirection(Direction.UP);
-                this.setNewDestination(this.findHighestFloor());
+                this.setNewDestination(currHighestStop);
             }
             else this.changeDirection(Direction.IDLE);
             this.updated = false;
@@ -83,7 +83,7 @@ public class Elevator {
         if (nextFloor == null || currHighestStop.getFloorID() == this.currentFloor.getFloorID()) {
             if (currLowestStop.getFloorID() != this.currentFloor.getFloorID()) {
                 this.changeDirection(Direction.DOWN);
-                this.setNewDestination(this.findLowestFloor());
+                this.setNewDestination(currLowestStop);
             }
             else this.changeDirection(Direction.IDLE);
             this.updated = false;

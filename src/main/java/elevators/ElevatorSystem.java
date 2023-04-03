@@ -1,7 +1,6 @@
 package elevators;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class ElevatorSystem {
     public ArrayList<Floor> floors;
@@ -43,16 +42,16 @@ public class ElevatorSystem {
     public Elevator getElevatorForPassenger(Passenger passenger) {
         int floorID = passenger.getCurrentFloor().getFloorID();
 
-        Elevator bestPossibleElevator = getPossibleMovingElevator(floorID);
-        if (bestPossibleElevator != null) return bestPossibleElevator;
+        Elevator best = getPossibleMovingElevator(floorID);
+        if (best != null) return best;
 
-        bestPossibleElevator = findIDLEElevator(passenger.getCurrentFloor().getFloorID());
-        if (bestPossibleElevator != null){
-            if (floorID > bestPossibleElevator.getCurrentFloor().getFloorID()) {bestPossibleElevator.changeDirection(Direction.UP);}
-            else bestPossibleElevator.changeDirection(Direction.DOWN);
-            return bestPossibleElevator;
+        best = findNearestIDLEElevator(passenger.getCurrentFloor().getFloorID());
+        if (best != null){
+            if (floorID > best.getCurrentFloor().getFloorID()) best.changeDirection(Direction.UP);
+            else best.changeDirection(Direction.DOWN);
+            return best;
         }
-        return findNearest(floorID);
+        else return findElevatorWithNearestDestination(floorID);
     }
 
     // Searching for an elevator that is moving and has the given floor on its route.
@@ -66,7 +65,7 @@ public class ElevatorSystem {
 
             if (direction == Direction.UP) {
                 distance = floorID - elevator.getCurrentFloor().getFloorID();
-                if (distance < 0) continue;
+                if (distance < 0) continue; // not on its route
             }
 
             else if (direction == Direction.DOWN){
@@ -83,7 +82,7 @@ public class ElevatorSystem {
     }
 
     // Searching for the elevator closest to a given floor that is in the IDLE state.
-    public Elevator findIDLEElevator(int floorID){
+    public Elevator findNearestIDLEElevator(int floorID){
         Elevator nearestElevator = null;
         int smallestDistance = this.numberOfFloors;
 
@@ -98,7 +97,7 @@ public class ElevatorSystem {
     }
 
     // finding elevator with the closest destination to the given floor
-    public Elevator findNearest(int floorID) {
+    public Elevator findElevatorWithNearestDestination(int floorID) {
         int distance = this.numberOfFloors;
         Elevator result = null;
         for (Elevator elevator : this.elevators){
