@@ -35,7 +35,7 @@
 ```
 
 <h3> ▫️ Application presentation: </h3> 
-<p> The application will first ask for data. Remember that the number of elevators must be less than or equal to 16. Otherwise, the program will throw an IllegalArgumentException. </p>
+<p> The application will first ask for data. Remember that the number of elevators must be less than or equal to 16 and greater than 0. Otherwise, the program will throw an IllegalArgumentException. </p>
 <img width="80%" src="/readme/start.gif">
 
 <p> The application allows for easy monitoring of the situation. At the beginning, each elevator is in the IDLE state and located on the 0th floor. On the right side, there is a sidebar that describes the current status of each elevator. </p>
