@@ -1,6 +1,7 @@
 package elevators;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class ElevatorSystem {
     public ArrayList<Floor> floors;
@@ -83,31 +84,18 @@ public class ElevatorSystem {
 
     // Searching for the elevator closest to a given floor that is in the IDLE state.
     public Elevator findNearestIDLEElevator(int floorID){
-        Elevator nearestElevator = null;
-        int smallestDistance = this.numberOfFloors;
-
-        for (Elevator elevator : this.elevators){
-            int distance = Math.abs(floorID - elevator.getCurrentFloor().getFloorID());
-            if (elevator.getCurrentDirection() == Direction.IDLE && distance < smallestDistance){
-                nearestElevator = elevator;
-                smallestDistance = distance;
-            }
-        }
-        return nearestElevator;
+        return this.elevators.stream()
+                .filter(elevator -> elevator.getCurrentDirection() == Direction.IDLE)
+                .min(Comparator.comparingInt(elevator -> Math.abs(floorID - elevator.getCurrentFloor().getFloorID())))
+                .orElse(null);
     }
+
 
     // finding elevator with the closest destination to the given floor
     public Elevator findElevatorWithNearestDestination(int floorID) {
-        int distance = this.numberOfFloors;
-        Elevator result = null;
-        for (Elevator elevator : this.elevators){
-            int newDistance = Math.abs(elevator.getDestinationFloor().getFloorID() - floorID);
-            if (newDistance < distance){
-                distance =  newDistance;
-                result = elevator;
-            }
-        }
-        return result;
+        return this.elevators.stream()
+                .min(Comparator.comparingInt(elevator -> Math.abs(elevator.getDestinationFloor().getFloorID() - floorID)))
+                .orElse(null);
     }
 
     // Finding the floor with given id
