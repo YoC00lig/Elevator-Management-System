@@ -47,4 +47,3 @@
 <p> If a passenger enters a floor that does not exist (less than zero or greater than the highest floor), the program will throw an IllegalArgumentException.</p>
 <img width="80%" src="/readme/demo.gif">
 
-<p> Simple <a href="https://github.com/YoC00lig/Elevator-System/blob/main/src/test/java/elevators/ElevatorTest.java">tests</a> have been conducted to verify if the functions are working correctly. </p>
