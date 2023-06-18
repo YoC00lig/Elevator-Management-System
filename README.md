@@ -19,6 +19,7 @@
 <li>Java 17</li>
 <li>JavaFX</li>
 <li>Gradle</li>
+<li> The icons have been sourced from <a href="https://www.flaticon.com">here</a>. </li>
 </ul>
 
 <h3> ▫️ Run a program: </h3> 
